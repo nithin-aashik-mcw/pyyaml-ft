@@ -93,8 +93,9 @@ does not support the free-threaded build, we recommend that users only
 conditionally switch to PyYAML-ft.
 
 At this time, PyYAML-ft **only supports Python 3.13 and 3.13t (i.e. the
-free-threaded build of 3.13)**. To switch to it, you can do the following
-in your `requirements.txt` file:
+free-threaded build of 3.13)**, except on Windows ARM64, where Python 3.11,
+3.12, 3.14 and 3.14t are also supported. To switch to it, you can do the
+following in your `requirements.txt` file:
 
 ```requirements.txt
 ...

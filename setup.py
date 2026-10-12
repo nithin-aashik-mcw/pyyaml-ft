@@ -340,5 +340,5 @@ if __name__ == '__main__':
 
         distclass=Distribution,
         cmdclass=cmdclass,
-        python_requires='>=3.13',
+        python_requires='>=3.11',
     )

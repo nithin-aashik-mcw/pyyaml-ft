@@ -378,6 +378,7 @@ jobs:
         include:
         - arch: x64
         - arch: win32
+        - { arch: ARM64, platform: windows-11-arm }
     steps:
     - name: Get cached libyaml state
       id: cached_libyaml
@@ -404,7 +405,7 @@ jobs:
         mkdir libyaml/build
 
         pushd libyaml/build
-        cmake.exe -G "Visual Studio 17 2022" -A ${{ matrix.arch }} -DYAML_STATIC_LIB_NAME=yaml ..
+        cmake.exe -A ${{ matrix.arch }} -DYAML_STATIC_LIB_NAME=yaml -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
         cmake.exe --build . --config Release
         popd
 
@@ -422,6 +423,12 @@ jobs:
           include:
           - spec: cp313-win_amd64
           - spec: cp313t-win_amd64
+          - { spec: cp313-win_arm64, runs-on: windows-11-arm }
+          - { spec: cp313t-win_arm64, runs-on: windows-11-arm }
+          - { spec: cp311-win_arm64, runs-on: windows-11-arm }
+          - { spec: cp312-win_arm64, runs-on: windows-11-arm }
+          - { spec: cp314-win_arm64, runs-on: windows-11-arm }
+          - { spec: cp314t-win_arm64, runs-on: windows-11-arm }
 
   windows_pyyaml:
     needs: [python_sdist, windows_libyaml, make_windows_pyyaml_matrix]
@@ -448,7 +455,7 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: libyaml
-        key: libyaml_${{'windows'}}_${{ contains(matrix.spec, 'win_amd64') && 'x64' || 'win32' }}_${{env.LIBYAML_REF}}
+        key: libyaml_${{'windows'}}_${{ contains(matrix.spec, 'win_amd64') && 'x64' || contains(matrix.spec, 'win_arm64') && 'ARM64' || 'win32' }}_${{env.LIBYAML_REF}}
         fail-on-cache-miss: true
 
     - name: Install python
@@ -471,7 +478,7 @@ jobs:
       run: |
         set -eux
         python -V
-        python -m pip install -U --user ${{ matrix.cibw_version || 'cibuildwheel' }}
+        python -m pip install -U --user "${{ matrix.cibw_version || 'cibuildwheel<4' }}"
         mkdir pyyaml
 
         tar zxf pyyaml_ft*.tar.gz/pyyaml_ft*.tar.gz --strip-components=1 -C pyyaml
